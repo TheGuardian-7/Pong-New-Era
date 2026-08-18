@@ -1,24 +1,11 @@
 package com.pongnewera
 
-import com.badlogic.gdx.ApplicationAdapter
-import com.badlogic.gdx.graphics.Texture
-import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.badlogic.gdx.utils.ScreenUtils
+import com.badlogic.gdx.Game
+import com.pongnewera.screens.GameScreen
 
-/** [com.badlogic.gdx.ApplicationListener] implementation shared by all platforms. */
-class PongNewEraGame : ApplicationAdapter() {
-    private val batch by lazy { SpriteBatch() }
-    private val image by lazy { Texture("libgdx.png") }
+class PongNewEraGame : Game() {
 
-    override fun render() {
-        ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f)
-        batch.begin()
-        batch.draw(image, 140f, 210f)
-        batch.end()
-    }
-
-    override fun dispose() {
-        batch.dispose()
-        image.dispose()
+    override fun create() {
+        setScreen(GameScreen(this))
     }
 }
