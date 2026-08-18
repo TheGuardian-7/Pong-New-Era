@@ -67,43 +67,4 @@ class GameScreen(
     override fun dispose() {
         shapeRenderer.dispose()
     }
-}        shapeRenderer.rect(
-            20f,
-            20f,
-            WORLD_WIDTH - 40f,
-            10f
-        )
-
-        shapeRenderer.rect(
-            20f,
-            WORLD_HEIGHT - 30f,
-            WORLD_WIDTH - 40f,
-            10f
-        )
-
-        shapeRenderer.end()
-    }
-
-    override fun resize(width: Int, height: Int) {
-        viewport.update(width, height, true)
-    }
-
-    override fun pause() {
-    }
-
-    override fun resume() {
-    }
-
-    override fun hide() {
-    }
-
-    override fun dispose() {
-        shapeRenderer.dispose()
-    }
-}
-    override fun hide() {
-    }
-
-    override fun dispose() {
-    }
 }
