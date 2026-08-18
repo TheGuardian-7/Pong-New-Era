@@ -24,11 +24,19 @@ class Ball(
         x += velocityX * delta
         y += velocityY * delta
     }
-
+    
+    fun setX(newX: Float) {
+        x = newX
+    }
+    
     fun setY(newY: Float) {
         y = newY
     }
-
+    
+    fun setVelocityX(newVelocityX: Float) {
+        velocityX = newVelocityX
+    }
+    
     fun setVelocityY(newVelocityY: Float) {
         velocityY = newVelocityY
     }
