@@ -42,6 +42,8 @@ class PongGame {
         initialVelocityY = BALL_SPEED_Y
     )
 
+    private val collisionSystem = CollisionSystem()
+
     fun update(
         delta: Float,
         input: PlayerInput
@@ -63,6 +65,12 @@ class PongGame {
         }
 
         ball.update(delta)
+
+        collisionSystem.update(
+            ball = ball,
+            leftPaddle = leftPaddle,
+            rightPaddle = rightPaddle
+        )
 
         val topLimit =
             WORLD_HEIGHT - FIELD_MARGIN - 10f - BALL_SIZE
