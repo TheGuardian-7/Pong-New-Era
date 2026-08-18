@@ -62,7 +62,7 @@ configure(subprojects - project(':android')) {
 
 subprojects {
   version = "$projectVersion"
-  ext.appName = 'ForgeWorks'
+  ext.appName = 'Pong: New Era'
   repositories {
     mavenCentral()
     // You may want to remove the following line if you have errors downloading dependencies.
@@ -72,4 +72,4 @@ subprojects {
   }
 }
 
-eclipse.project.name = 'ForgeWorks' + '-parent'
+eclipse.project.name = 'Pong: New Era' + '-parent'
