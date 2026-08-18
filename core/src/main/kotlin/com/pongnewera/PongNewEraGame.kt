@@ -1,4 +1,4 @@
-package com.forgeworks
+package com.pongnewera
 
 import com.badlogic.gdx.ApplicationAdapter
 import com.badlogic.gdx.graphics.Texture
@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.utils.ScreenUtils
 
 /** [com.badlogic.gdx.ApplicationListener] implementation shared by all platforms. */
-class ForgeWorksGame : ApplicationAdapter() {
+class PongNewEraGame : ApplicationAdapter() {
     private val batch by lazy { SpriteBatch() }
     private val image by lazy { Texture("libgdx.png") }
 
