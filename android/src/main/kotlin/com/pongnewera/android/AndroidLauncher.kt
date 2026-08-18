@@ -10,7 +10,7 @@ import com.pongnewera.PongNewEraGame
 class AndroidLauncher : AndroidApplication() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        initialize(ForgeWorksGame(), AndroidApplicationConfiguration().apply {
+        initialize(PongNewEraGame(), AndroidApplicationConfiguration().apply {
             // Configure your application here.
             useImmersiveMode = true // Recommended, but not required.
         })
