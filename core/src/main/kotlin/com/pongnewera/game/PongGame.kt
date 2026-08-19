@@ -1,7 +1,6 @@
 package com.pongnewera.game
 
 import com.pongnewera.input.PlayerInput
-import kotlin.math.abs
 
 class PongGame {
 
@@ -42,27 +41,19 @@ class PongGame {
         initialVelocityY = BALL_SPEED_Y
     )
 
-    private val collisionSystem = CollisionSystem(bouncCalculator BounceCalculator)
+    private val bounceCalculator = BounceCalculator()
+
+    private val collisionSystem = CollisionSystem(
+        bounceCalculator = bounceCalculator
+    )
+
+    private val ballBoundsSystem = BallBoundsSystem()
 
     fun update(
         delta: Float,
         input: PlayerInput
     ) {
-        input.leftPaddleY?.let {
-            leftPaddle.setY(
-                targetY = it - PADDLE_HEIGHT / 2f,
-                minY = FIELD_MARGIN,
-                maxY = WORLD_HEIGHT - FIELD_MARGIN - PADDLE_HEIGHT
-            )
-        }
-
-        input.rightPaddleY?.let {
-            rightPaddle.setY(
-                targetY = it - PADDLE_HEIGHT / 2f,
-                minY = FIELD_MARGIN,
-                maxY = WORLD_HEIGHT - FIELD_MARGIN - PADDLE_HEIGHT
-            )
-        }
+        updatePaddles(input)
 
         ball.update(delta)
 
@@ -72,20 +63,28 @@ class PongGame {
             rightPaddle = rightPaddle
         )
 
-        val topLimit =
-            WORLD_HEIGHT - FIELD_MARGIN - 10f - BALL_SIZE
+        ballBoundsSystem.update(ball)
+    }
 
-        val bottomLimit =
-            FIELD_MARGIN + 10f
-
-        if (ball.y >= topLimit) {
-            ball.setY(topLimit)
-            ball.setVelocityY(-abs(ball.velocityY))
+    private fun updatePaddles(input: PlayerInput) {
+        input.leftPaddleY?.let {
+            leftPaddle.setY(
+                targetY = it - PADDLE_HEIGHT / 2f,
+                minY = FIELD_MARGIN,
+                maxY = WORLD_HEIGHT -
+                    FIELD_MARGIN -
+                    PADDLE_HEIGHT
+            )
         }
 
-        if (ball.y <= bottomLimit) {
-            ball.setY(bottomLimit)
-            ball.setVelocityY(abs(ball.velocityY))
+        input.rightPaddleY?.let {
+            rightPaddle.setY(
+                targetY = it - PADDLE_HEIGHT / 2f,
+                minY = FIELD_MARGIN,
+                maxY = WORLD_HEIGHT -
+                    FIELD_MARGIN -
+                    PADDLE_HEIGHT
+            )
         }
     }
 }
