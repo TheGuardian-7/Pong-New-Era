@@ -1,5 +1,7 @@
 package com.pongnewera.game
 
+import com.pongnewera.game.system.BallMovementSystem
+import com.pongnewera.game.system.PaddleMovementSystem
 import com.pongnewera.input.PlayerInput
 
 class PongGame {
@@ -46,6 +48,10 @@ class PongGame {
     var matchState: MatchState = MatchState.READY
         private set
 
+    private val paddleMovementSystem = PaddleMovementSystem()
+
+    private val ballMovementSystem = BallMovementSystem()
+
     private val bounceCalculator = BounceCalculator()
 
     private val collisionSystem = CollisionSystem(
@@ -70,9 +76,16 @@ class PongGame {
             return
         }
 
-        updatePaddles(input)
+        paddleMovementSystem.update(
+            leftPaddle = leftPaddle,
+            rightPaddle = rightPaddle,
+            input = input
+        )
 
-        ball.update(delta)
+        ballMovementSystem.update(
+            ball = ball,
+            delta = delta
+        )
 
         collisionSystem.update(
             ball = ball,
@@ -83,28 +96,6 @@ class PongGame {
         ballBoundsSystem.update(ball)
 
         checkScoring()
-    }
-
-    private fun updatePaddles(input: PlayerInput) {
-        input.leftPaddleY?.let {
-            leftPaddle.setY(
-                targetY = it - PADDLE_HEIGHT / 2f,
-                minY = FIELD_MARGIN,
-                maxY = WORLD_HEIGHT -
-                    FIELD_MARGIN -
-                    PADDLE_HEIGHT
-            )
-        }
-
-        input.rightPaddleY?.let {
-            rightPaddle.setY(
-                targetY = it - PADDLE_HEIGHT / 2f,
-                minY = FIELD_MARGIN,
-                maxY = WORLD_HEIGHT -
-                    FIELD_MARGIN -
-                    PADDLE_HEIGHT
-            )
-        }
     }
 
     private fun checkScoring() {
