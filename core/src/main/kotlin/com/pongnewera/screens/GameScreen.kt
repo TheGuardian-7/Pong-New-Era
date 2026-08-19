@@ -36,6 +36,7 @@ class GameScreen(
 
     override fun show() {
         viewport.apply()
+        PongGame.start()
     }
 
     override fun render(delta: Float) {
