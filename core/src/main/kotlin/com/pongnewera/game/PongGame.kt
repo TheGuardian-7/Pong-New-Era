@@ -41,6 +41,11 @@ class PongGame {
         initialVelocityY = BALL_SPEED_Y
     )
 
+    val score = Score()
+
+    var matchState: MatchState = MatchState.READY
+        private set
+
     private val bounceCalculator = BounceCalculator()
 
     private val collisionSystem = CollisionSystem(
@@ -49,10 +54,22 @@ class PongGame {
 
     private val ballBoundsSystem = BallBoundsSystem()
 
+    private val matchRules = MatchRules()
+
+    fun start() {
+        if (matchState == MatchState.READY) {
+            matchState = MatchState.PLAYING
+        }
+    }
+
     fun update(
         delta: Float,
         input: PlayerInput
     ) {
+        if (matchState != MatchState.PLAYING) {
+            return
+        }
+
         updatePaddles(input)
 
         ball.update(delta)
@@ -64,6 +81,8 @@ class PongGame {
         )
 
         ballBoundsSystem.update(ball)
+
+        checkScoring()
     }
 
     private fun updatePaddles(input: PlayerInput) {
@@ -85,6 +104,30 @@ class PongGame {
                     FIELD_MARGIN -
                     PADDLE_HEIGHT
             )
+        }
+    }
+
+    private fun checkScoring() {
+        when (matchRules.determineScoringPlayer(ball)) {
+            ScoringPlayer.LEFT -> {
+                score.addLeftPoint()
+                handlePointScored()
+            }
+
+            ScoringPlayer.RIGHT -> {
+                score.addRightPoint()
+                handlePointScored()
+            }
+
+            null -> Unit
+        }
+    }
+
+    private fun handlePointScored() {
+        matchState = if (matchRules.hasWinner(score)) {
+            MatchState.GAME_OVER
+        } else {
+            MatchState.POINT_SCORED
         }
     }
 }
