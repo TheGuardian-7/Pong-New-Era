@@ -1,6 +1,8 @@
 package com.pongnewera.game
 
-class CollisionSystem {
+class CollisionSystem(
+    private val bounceCalculator: BounceCalculator
+) {
 
     fun update(
         ball: Ball,
@@ -8,13 +10,25 @@ class CollisionSystem {
         rightPaddle: Paddle
     ) {
         if (ball.velocityX < 0f && intersects(ball, leftPaddle)) {
+            val velocity = bounceCalculator.calculateVelocity(
+                ball = ball,
+                paddle = leftPaddle
+            )
+
             ball.setX(leftPaddle.x + leftPaddle.width)
-            ball.setVelocityX(-ball.velocityX)
+            ball.setVelocityX(velocity.first)
+            ball.setVelocityY(velocity.second)
         }
 
         if (ball.velocityX > 0f && intersects(ball, rightPaddle)) {
+            val velocity = bounceCalculator.calculateVelocity(
+                ball = ball,
+                paddle = rightPaddle
+            )
+
             ball.setX(rightPaddle.x - ball.size)
-            ball.setVelocityX(-ball.velocityX)
+            ball.setVelocityX(velocity.first)
+            ball.setVelocityY(velocity.second)
         }
     }
 

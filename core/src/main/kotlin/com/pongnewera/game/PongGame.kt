@@ -1,7 +1,6 @@
 package com.pongnewera.game
 
 import com.pongnewera.input.PlayerInput
-import kotlin.math.abs
 
 class PongGame {
 
@@ -42,27 +41,36 @@ class PongGame {
         initialVelocityY = BALL_SPEED_Y
     )
 
-    private val collisionSystem = CollisionSystem()
+    val score = Score()
+
+    var matchState: MatchState = MatchState.READY
+        private set
+
+    private val bounceCalculator = BounceCalculator()
+
+    private val collisionSystem = CollisionSystem(
+        bounceCalculator = bounceCalculator
+    )
+
+    private val ballBoundsSystem = BallBoundsSystem()
+
+    private val matchRules = MatchRules()
+
+    fun start() {
+        if (matchState == MatchState.READY) {
+            matchState = MatchState.PLAYING
+        }
+    }
 
     fun update(
         delta: Float,
         input: PlayerInput
     ) {
-        input.leftPaddleY?.let {
-            leftPaddle.setY(
-                targetY = it - PADDLE_HEIGHT / 2f,
-                minY = FIELD_MARGIN,
-                maxY = WORLD_HEIGHT - FIELD_MARGIN - PADDLE_HEIGHT
-            )
+        if (matchState != MatchState.PLAYING) {
+            return
         }
 
-        input.rightPaddleY?.let {
-            rightPaddle.setY(
-                targetY = it - PADDLE_HEIGHT / 2f,
-                minY = FIELD_MARGIN,
-                maxY = WORLD_HEIGHT - FIELD_MARGIN - PADDLE_HEIGHT
-            )
-        }
+        updatePaddles(input)
 
         ball.update(delta)
 
@@ -72,20 +80,54 @@ class PongGame {
             rightPaddle = rightPaddle
         )
 
-        val topLimit =
-            WORLD_HEIGHT - FIELD_MARGIN - 10f - BALL_SIZE
+        ballBoundsSystem.update(ball)
 
-        val bottomLimit =
-            FIELD_MARGIN + 10f
+        checkScoring()
+    }
 
-        if (ball.y >= topLimit) {
-            ball.setY(topLimit)
-            ball.setVelocityY(-abs(ball.velocityY))
+    private fun updatePaddles(input: PlayerInput) {
+        input.leftPaddleY?.let {
+            leftPaddle.setY(
+                targetY = it - PADDLE_HEIGHT / 2f,
+                minY = FIELD_MARGIN,
+                maxY = WORLD_HEIGHT -
+                    FIELD_MARGIN -
+                    PADDLE_HEIGHT
+            )
         }
 
-        if (ball.y <= bottomLimit) {
-            ball.setY(bottomLimit)
-            ball.setVelocityY(abs(ball.velocityY))
+        input.rightPaddleY?.let {
+            rightPaddle.setY(
+                targetY = it - PADDLE_HEIGHT / 2f,
+                minY = FIELD_MARGIN,
+                maxY = WORLD_HEIGHT -
+                    FIELD_MARGIN -
+                    PADDLE_HEIGHT
+            )
+        }
+    }
+
+    private fun checkScoring() {
+        when (matchRules.determineScoringPlayer(ball)) {
+            ScoringPlayer.LEFT -> {
+                score.addLeftPoint()
+                handlePointScored()
+            }
+
+            ScoringPlayer.RIGHT -> {
+                score.addRightPoint()
+                handlePointScored()
+            }
+
+            null -> Unit
+        }
+    }
+
+    private fun handlePointScored() {
+        matchState = if (matchRules.hasWinner(score)) {
+            MatchState.GAME_OVER
+        } else {
+            MatchState.POINT_SCORED
         }
     }
 }
