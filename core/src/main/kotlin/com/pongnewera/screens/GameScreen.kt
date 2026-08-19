@@ -2,7 +2,6 @@ package com.pongnewera.screens
 
 import com.badlogic.gdx.Game
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.Input
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
@@ -41,15 +40,14 @@ class GameScreen(
     }
 
     override fun render(delta: Float) {
-        handleStartInput()
+        handleInput()
 
         pongGame.update(
             delta = delta,
             input = touchInput.read()
         )
 
-        Gdx.gl.glClearColor(0f, 0f, 0f, 1f)
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
+        clearScreen()
 
         camera.update()
         shapeRenderer.projectionMatrix = camera.combined
@@ -57,18 +55,49 @@ class GameScreen(
         renderer.render(pongGame)
     }
 
-    private fun handleStartInput() {
-        if (pongGame.matchState != MatchState.READY) {
+    private fun handleInput() {
+        if (!Gdx.input.justTouched()) {
             return
         }
 
-        if (Gdx.input.justTouched()) {
-            pongGame.start()
+        when (pongGame.matchState) {
+            MatchState.READY -> {
+                pongGame.start()
+            }
+
+            MatchState.POINT_SCORED -> {
+                pongGame.continueAfterPoint()
+            }
+
+            MatchState.PLAYING,
+            MatchState.GAME_OVER -> {
+                // No action for now.
+            }
         }
     }
 
-    override fun resize(width: Int, height: Int) {
-        viewport.update(width, height, true)
+    private fun clearScreen() {
+        Gdx.gl.glClearColor(
+            0f,
+            0f,
+            0f,
+            1f
+        )
+
+        Gdx.gl.glClear(
+            GL20.GL_COLOR_BUFFER_BIT
+        )
+    }
+
+    override fun resize(
+        width: Int,
+        height: Int
+    ) {
+        viewport.update(
+            width,
+            height,
+            true
+        )
     }
 
     override fun pause() {
