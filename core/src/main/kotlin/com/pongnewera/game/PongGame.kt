@@ -42,7 +42,7 @@ class PongGame {
         initialVelocityY = BALL_SPEED_Y
     )
 
-    private val collisionSystem = CollisionSystem()
+    private val collisionSystem = CollisionSystem(bouncCalculator BounceCalculator)
 
     fun update(
         delta: Float,
