@@ -1,5 +1,6 @@
 package com.pongnewera.game
 
+import com.pongnewera.game.system.BallMovementSystem
 import com.pongnewera.game.system.PaddleMovementSystem
 import com.pongnewera.input.PlayerInput
 
@@ -49,6 +50,8 @@ class PongGame {
 
     private val paddleMovementSystem = PaddleMovementSystem()
 
+    private val ballMovementSystem = BallMovementSystem()
+
     private val bounceCalculator = BounceCalculator()
 
     private val collisionSystem = CollisionSystem(
@@ -79,7 +82,10 @@ class PongGame {
             input = input
         )
 
-        ball.update(delta)
+        ballMovementSystem.update(
+            ball = ball,
+            delta = delta
+        )
 
         collisionSystem.update(
             ball = ball,
