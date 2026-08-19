@@ -1,5 +1,6 @@
 package com.pongnewera.game
 
+import com.pongnewera.game.system.PaddleMovementSystem
 import com.pongnewera.input.PlayerInput
 
 class PongGame {
@@ -15,8 +16,8 @@ class PongGame {
 
         const val BALL_SIZE = 12f
 
-        const val BALL_SPEED_X = 300f
-        const val BALL_SPEED_Y = 180f
+        private const val BALL_SPEED_X = 300f
+        private const val BALL_SPEED_Y = 180f
     }
 
     val leftPaddle = Paddle(
@@ -46,132 +47,7 @@ class PongGame {
     var matchState: MatchState = MatchState.READY
         private set
 
-    private val bounceCalculator = BounceCalculator()
-
-    private val collisionSystem = CollisionSystem(
-        bounceCalculator = bounceCalculator
-    )
-
-    private val ballBoundsSystem = BallBoundsSystem()
-
-    private val matchRules = MatchRules()
-
-    private val roundResetSystem = RoundResetSystem()
-
-    fun start() {
-        if (matchState == MatchState.READY) {
-            matchState = MatchState.PLAYING
-        }
-    }
-
-    fun update(
-        delta: Float,
-        input: PlayerInput
-    ) {
-        when (matchState) {
-            MatchState.READY -> {
-                return
-            }
-
-            MatchState.PLAYING -> {
-                updatePlaying(delta, input)
-            }
-
-            MatchState.POINT_SCORED -> {
-                resetRound()
-            }
-
-            MatchState.GAME_OVER -> {
-                return
-            }
-        }
-    }
-
-    private fun updatePlaying(
-        delta: Float,
-        input: PlayerInput
-    ) {
-        updatePaddles(input)
-
-        ball.update(delta)
-
-        collisionSystem.update(
-            ball = ball,
-            leftPaddle = leftPaddle,
-            rightPaddle = rightPaddle
-        )
-
-        ballBoundsSystem.update(ball)
-
-        checkScoring()
-    }
-
-    private fun updatePaddles(input: PlayerInput) {
-        input.leftPaddleY?.let {
-            leftPaddle.setY(
-                targetY = it - PADDLE_HEIGHT / 2f,
-                minY = FIELD_MARGIN,
-                maxY = WORLD_HEIGHT -
-                    FIELD_MARGIN -
-                    PADDLE_HEIGHT
-            )
-        }
-
-        input.rightPaddleY?.let {
-            rightPaddle.setY(
-                targetY = it - PADDLE_HEIGHT / 2f,
-                minY = FIELD_MARGIN,
-                maxY = WORLD_HEIGHT -
-                    FIELD_MARGIN -
-                    PADDLE_HEIGHT
-            )
-        }
-    }
-
-    private fun checkScoring() {
-        when (matchRules.determineScoringPlayer(ball)) {
-            ScoringPlayer.LEFT -> {
-                score.addLeftPoint()
-                handlePointScored()
-            }
-
-            ScoringPlayer.RIGHT -> {
-                score.addRightPoint()
-                handlePointScored()
-            }
-
-            null -> Unit
-        }
-    }
-
-    private fun handlePointScored() {
-        matchState = if (matchRules.hasWinner(score)) {
-            MatchState.GAME_OVER
-        } else {
-            MatchState.POINT_SCORED
-        }
-    }
-
-    private fun resetRound() {
-        roundResetSystem.reset(
-            ball = ball,
-            leftPaddle = leftPaddle,
-            rightPaddle = rightPaddle
-        )
-
-        matchState = MatchState.PLAYING
-    }
-}        size = BALL_SIZE,
-        initialX = (WORLD_WIDTH - BALL_SIZE) / 2f,
-        initialY = (WORLD_HEIGHT - BALL_SIZE) / 2f,
-        initialVelocityX = BALL_SPEED_X,
-        initialVelocityY = BALL_SPEED_Y
-    )
-
-    val score = Score()
-
-    var matchState: MatchState = MatchState.READY
-        private set
+    private val paddleMovementSystem = PaddleMovementSystem()
 
     private val bounceCalculator = BounceCalculator()
 
@@ -197,7 +73,11 @@ class PongGame {
             return
         }
 
-        updatePaddles(input)
+        paddleMovementSystem.update(
+            leftPaddle = leftPaddle,
+            rightPaddle = rightPaddle,
+            input = input
+        )
 
         ball.update(delta)
 
@@ -210,28 +90,6 @@ class PongGame {
         ballBoundsSystem.update(ball)
 
         checkScoring()
-    }
-
-    private fun updatePaddles(input: PlayerInput) {
-        input.leftPaddleY?.let {
-            leftPaddle.setY(
-                targetY = it - PADDLE_HEIGHT / 2f,
-                minY = FIELD_MARGIN,
-                maxY = WORLD_HEIGHT -
-                    FIELD_MARGIN -
-                    PADDLE_HEIGHT
-            )
-        }
-
-        input.rightPaddleY?.let {
-            rightPaddle.setY(
-                targetY = it - PADDLE_HEIGHT / 2f,
-                minY = FIELD_MARGIN,
-                maxY = WORLD_HEIGHT -
-                    FIELD_MARGIN -
-                    PADDLE_HEIGHT
-            )
-        }
     }
 
     private fun checkScoring() {
