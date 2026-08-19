@@ -2,6 +2,7 @@ package com.pongnewera.game
 
 import com.pongnewera.game.system.BallMovementSystem
 import com.pongnewera.game.system.PaddleMovementSystem
+import com.pongnewera.game.system.ScoringSystem
 import com.pongnewera.input.PlayerInput
 
 class PongGame {
@@ -45,8 +46,7 @@ class PongGame {
 
     val score = Score()
 
-    var matchState: MatchState = MatchState.READY
-        private set
+    private val matchStateController = MatchStateController()
 
     private val paddleMovementSystem = PaddleMovementSystem()
 
@@ -62,10 +62,19 @@ class PongGame {
 
     private val matchRules = MatchRules()
 
+    private val scoringSystem = ScoringSystem(
+        matchRules = matchRules
+    )
+
+    val matchState: MatchState
+        get() = matchStateController.state
+
     fun start() {
-        if (matchState == MatchState.READY) {
-            matchState = MatchState.PLAYING
-        }
+        matchStateController.start()
+    }
+
+    fun continueAfterPoint() {
+        matchStateController.continueAfterPoint()
     }
 
     fun update(
@@ -95,30 +104,15 @@ class PongGame {
 
         ballBoundsSystem.update(ball)
 
-        checkScoring()
-    }
+        val scoringResult = scoringSystem.update(
+            ball = ball,
+            score = score
+        )
 
-    private fun checkScoring() {
-        when (matchRules.determineScoringPlayer(ball)) {
-            ScoringPlayer.LEFT -> {
-                score.addLeftPoint()
-                handlePointScored()
-            }
-
-            ScoringPlayer.RIGHT -> {
-                score.addRightPoint()
-                handlePointScored()
-            }
-
-            null -> Unit
-        }
-    }
-
-    private fun handlePointScored() {
-        matchState = if (matchRules.hasWinner(score)) {
-            MatchState.GAME_OVER
-        } else {
-            MatchState.POINT_SCORED
+        if (scoringResult != ScoringResult.NONE) {
+            matchStateController.handlePointScored(
+                hasWinner = matchRules.hasWinner(score)
+            )
         }
     }
 }
