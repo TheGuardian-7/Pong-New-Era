@@ -1,5 +1,7 @@
 package com.pongnewera.game.system
 
+import com.pongnewera.game.BounceCalculator
+
 class CollisionSystem(
     private val bounceCalculator: BounceCalculator
 ) {
