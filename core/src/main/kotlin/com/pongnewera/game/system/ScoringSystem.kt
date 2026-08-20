@@ -1,8 +1,8 @@
 package com.pongnewera.game.system
 
-import com.pongnewera.game.Ball
+import com.pongnewera.game.entity.Ball
 import com.pongnewera.game.MatchRules
-import com.pongnewera.game.Score
+import com.pongnewera.game.entity.Score
 import com.pongnewera.game.ScoringPlayer
 import com.pongnewera.game.ScoringResult
 
