@@ -1,4 +1,4 @@
-package com.pongnewera.game
+package com.pongnewera.game.entity
 
 class Score {
 

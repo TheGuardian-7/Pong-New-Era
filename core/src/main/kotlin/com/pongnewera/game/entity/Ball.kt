@@ -1,4 +1,4 @@
-package com.pongnewera.game
+package com.pongnewera.game.entity
 
 class Ball(
     val size: Float,
@@ -20,24 +20,19 @@ class Ball(
     var velocityY: Float = initialVelocityY
         private set
 
-    fun move(delta: Float) {
-        x += velocityX * delta
-        y += velocityY * delta
+    fun setX(value: Float) {
+        x = value
     }
 
-    fun setX(newX: Float) {
-        x = newX
+    fun setY(value: Float) {
+        y = value
     }
 
-    fun setY(newY: Float) {
-        y = newY
+    fun setVelocityX(value: Float) {
+        velocityX = value
     }
 
-    fun setVelocityX(newVelocityX: Float) {
-        velocityX = newVelocityX
-    }
-
-    fun setVelocityY(newVelocityY: Float) {
-        velocityY = newVelocityY
+    fun setVelocityY(value: Float) {
+        velocityY = value
     }
 }

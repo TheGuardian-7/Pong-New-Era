@@ -1,6 +1,6 @@
 package com.pongnewera.game.system
 
-import com.pongnewera.game.Ball
+import com.pongnewera.game.entity.Ball
 
 class BallMovementSystem {
 

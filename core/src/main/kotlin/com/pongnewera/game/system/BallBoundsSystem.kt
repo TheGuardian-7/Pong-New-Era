@@ -1,18 +1,21 @@
-package com.pongnewera.game
+package com.pongnewera.game.system
 
+import com.pongnewera.game.entity.Ball
+import com.pongnewera.game.GameConfig
 import kotlin.math.abs
 
-class BallBoundsSystem {
+class BallBoundsSystem(
+    private val config: GameConfig
+) {
 
     fun update(ball: Ball) {
         val topLimit =
-            PongGame.WORLD_HEIGHT -
-                PongGame.FIELD_MARGIN -
-                10f -
+            config.worldHeight -
+                config.fieldMargin -
                 ball.size
 
         val bottomLimit =
-            PongGame.FIELD_MARGIN + 10f
+            config.fieldMargin
 
         if (ball.y >= topLimit) {
             ball.setY(topLimit)
