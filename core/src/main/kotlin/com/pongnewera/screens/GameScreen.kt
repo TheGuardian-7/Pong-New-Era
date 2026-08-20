@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.utils.viewport.FitViewport
+import com.pongnewera.game.GameConfig
 import com.pongnewera.game.MatchState
 import com.pongnewera.game.PongGame
 import com.pongnewera.input.TouchInput
@@ -16,24 +17,31 @@ class GameScreen(
     private val game: Game
 ) : Screen {
 
+    private val config = GameConfig()
+
     private val camera = OrthographicCamera()
 
     private val viewport = FitViewport(
-        PongGame.WORLD_WIDTH,
-        PongGame.WORLD_HEIGHT,
+        config.worldWidth,
+        config.worldHeight,
         camera
     )
 
     private val shapeRenderer = ShapeRenderer()
 
-    private val pongGame = PongGame()
+    private val pongGame = PongGame(
+        config = config
+    )
 
     private val touchInput = TouchInput(
         viewport = viewport,
-        worldWidth = PongGame.WORLD_WIDTH
+        worldWidth = config.worldWidth
     )
 
-    private val renderer = GameRenderer(shapeRenderer)
+    private val renderer = GameRenderer(
+        shapeRenderer = shapeRenderer,
+        config = config
+    )
 
     override fun show() {
         viewport.apply()
@@ -71,7 +79,6 @@ class GameScreen(
 
             MatchState.PLAYING,
             MatchState.GAME_OVER -> {
-                // No action for now.
             }
         }
     }
