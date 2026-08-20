@@ -1,10 +1,12 @@
 package com.pongnewera.game.system
 
-import com.pongnewera.game.PongGame
+import com.pongnewera.game.GameConfig
 import com.pongnewera.game.Paddle
 import com.pongnewera.input.PlayerInput
 
-class PaddleMovementSystem {
+class PaddleMovementSystem(
+    private val config: GameConfig
+) {
 
     fun update(
         leftPaddle: Paddle,
@@ -30,9 +32,9 @@ class PaddleMovementSystem {
 
         paddle.setY(
             targetY = targetY - paddle.height / 2f,
-            minY = PongGame.FIELD_MARGIN,
-            maxY = PongGame.WORLD_HEIGHT -
-                PongGame.FIELD_MARGIN -
+            minY = config.fieldMargin,
+            maxY = config.worldHeight -
+                config.fieldMargin -
                 paddle.height
         )
     }
