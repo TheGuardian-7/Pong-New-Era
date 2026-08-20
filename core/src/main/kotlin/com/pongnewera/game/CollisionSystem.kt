@@ -1,4 +1,4 @@
-package com.pongnewera.game
+package com.pongnewera.game.system
 
 class CollisionSystem(
     private val bounceCalculator: BounceCalculator
