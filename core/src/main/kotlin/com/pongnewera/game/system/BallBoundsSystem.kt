@@ -1,6 +1,6 @@
 package com.pongnewera.game.system
 
-import com.pongnewera.game.Ball
+import com.pongnewera.game.entity.Ball
 import com.pongnewera.game.GameConfig
 import kotlin.math.abs
 
