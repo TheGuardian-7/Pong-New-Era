@@ -1,7 +1,7 @@
 package com.pongnewera.game.system
 
 import com.pongnewera.game.GameConfig
-import com.pongnewera.game.Paddle
+import com.pongnewera.game.entity.Paddle
 import com.pongnewera.input.PlayerInput
 
 class PaddleMovementSystem(
