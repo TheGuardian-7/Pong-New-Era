@@ -8,59 +8,60 @@ import com.pongnewera.game.system.RoundResetSystem
 import com.pongnewera.game.system.ScoringSystem
 import com.pongnewera.input.PlayerInput
 
-class PongGame {
-
-    companion object {
-        const val WORLD_WIDTH = 800f
-        const val WORLD_HEIGHT = 480f
-
-        const val FIELD_MARGIN = 30f
-
-        const val PADDLE_WIDTH = 12f
-        const val PADDLE_HEIGHT = 80f
-
-        const val BALL_SIZE = 12f
-
-        private const val INITIAL_BALL_VELOCITY_X = 300f
-        private const val INITIAL_BALL_VELOCITY_Y = 180f
-    }
+class PongGame(
+    private val config: GameConfig = GameConfig()
+) {
 
     val leftPaddle = Paddle(
         x = 40f,
-        width = PADDLE_WIDTH,
-        height = PADDLE_HEIGHT,
-        initialY = (WORLD_HEIGHT - PADDLE_HEIGHT) / 2f
+        width = config.paddleWidth,
+        height = config.paddleHeight,
+        initialY = centeredPaddleY()
     )
 
     val rightPaddle = Paddle(
-        x = WORLD_WIDTH - 40f - PADDLE_WIDTH,
-        width = PADDLE_WIDTH,
-        height = PADDLE_HEIGHT,
-        initialY = (WORLD_HEIGHT - PADDLE_HEIGHT) / 2f
+        x = config.worldWidth - 40f - config.paddleWidth,
+        width = config.paddleWidth,
+        height = config.paddleHeight,
+        initialY = centeredPaddleY()
     )
 
     val ball = Ball(
-        size = BALL_SIZE,
-        initialX = (WORLD_WIDTH - BALL_SIZE) / 2f,
-        initialY = (WORLD_HEIGHT - BALL_SIZE) / 2f,
-        initialVelocityX = INITIAL_BALL_VELOCITY_X,
-        initialVelocityY = INITIAL_BALL_VELOCITY_Y
+        size = config.ballSize,
+        initialX = centeredBallX(),
+        initialY = centeredBallY(),
+        initialVelocityX = config.ballSpeedX,
+        initialVelocityY = config.ballSpeedY
     )
 
     val score = Score()
 
     private val matchStateController = MatchStateController()
 
-    private val paddleMovementSystem = PaddleMovementSystem()
+    private val paddleMovementSystem = PaddleMovementSystem(
+        config = config
+    )
+
     private val ballMovementSystem = BallMovementSystem()
+
     private val collisionSystem = CollisionSystem(
         bounceCalculator = BounceCalculator()
     )
-    private val ballBoundsSystem = BallBoundsSystem()
-    private val scoringSystem = ScoringSystem(
-        matchRules = MatchRules()
+
+    private val ballBoundsSystem = BallBoundsSystem(
+        config = config
     )
-    private val roundResetSystem = RoundResetSystem()
+
+    private val scoringSystem = ScoringSystem(
+        matchRules = MatchRules(
+            winningScore = config.winningScore,
+            worldWidth = config.worldWidth
+        )
+    )
+
+    private val roundResetSystem = RoundResetSystem(
+        config = config
+    )
 
     val matchState: MatchState
         get() = matchStateController.state
@@ -92,58 +93,36 @@ class PongGame {
             return
         }
 
-        updatePaddles(input)
-        updateBall(delta)
-        resolveBallCollisions()
-        resolveBallBounds()
-        processScoring()
-    }
-
-    private fun updatePaddles(input: PlayerInput) {
         paddleMovementSystem.update(
             leftPaddle = leftPaddle,
             rightPaddle = rightPaddle,
             input = input
         )
-    }
 
-    private fun updateBall(delta: Float) {
         ballMovementSystem.update(
             ball = ball,
             delta = delta
         )
-    }
 
-    private fun resolveBallCollisions() {
         collisionSystem.update(
             ball = ball,
             leftPaddle = leftPaddle,
             rightPaddle = rightPaddle
         )
-    }
 
-    private fun resolveBallBounds() {
         ballBoundsSystem.update(ball)
-    }
 
-    private fun processScoring() {
         val scoringResult = scoringSystem.update(
             ball = ball,
             score = score
         )
 
-        if (scoringResult == ScoringResult.NONE) {
-            return
+        if (scoringResult != ScoringResult.NONE) {
+            matchStateController.handlePointScored(
+                hasWinner = score.left >= config.winningScore ||
+                    score.right >= config.winningScore
+            )
         }
-
-        matchStateController.handlePointScored(
-            hasWinner = determineWinner()
-        )
-    }
-
-    private fun determineWinner(): Boolean {
-        return score.left >= WINNING_SCORE ||
-            score.right >= WINNING_SCORE
     }
 
     private fun determineServeDirection(): Float {
@@ -154,7 +133,15 @@ class PongGame {
         }
     }
 
-    private companion object {
-        const val WINNING_SCORE = 5
+    private fun centeredPaddleY(): Float {
+        return (config.worldHeight - config.paddleHeight) / 2f
+    }
+
+    private fun centeredBallX(): Float {
+        return (config.worldWidth - config.ballSize) / 2f
+    }
+
+    private fun centeredBallY(): Float {
+        return (config.worldHeight - config.ballSize) / 2f
     }
 }
