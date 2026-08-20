@@ -1,15 +1,13 @@
 package com.pongnewera.game.system
 
 import com.pongnewera.game.Ball
+import com.pongnewera.game.GameConfig
 import com.pongnewera.game.Paddle
 import kotlin.math.abs
 
-class RoundResetSystem {
-
-    companion object {
-        private const val BALL_SPEED_X = 300f
-        private const val BALL_SPEED_Y = 180f
-    }
+class RoundResetSystem(
+    private val config: GameConfig
+) {
 
     fun reset(
         ball: Ball,
@@ -33,18 +31,20 @@ class RoundResetSystem {
         serveDirection: Float
     ) {
         ball.setX(
-            (WORLD_WIDTH - ball.size) / 2f
+            (config.worldWidth - ball.size) / 2f
         )
 
         ball.setY(
-            (WORLD_HEIGHT - ball.size) / 2f
+            (config.worldHeight - ball.size) / 2f
         )
 
         ball.setVelocityX(
-            abs(BALL_SPEED_X) * serveDirection
+            abs(config.ballSpeedX) * serveDirection
         )
 
-        ball.setVelocityY(BALL_SPEED_Y)
+        ball.setVelocityY(
+            config.ballSpeedY
+        )
     }
 
     private fun resetPaddles(
@@ -52,28 +52,22 @@ class RoundResetSystem {
         rightPaddle: Paddle
     ) {
         val paddleY =
-            (WORLD_HEIGHT - leftPaddle.height) / 2f
+            (config.worldHeight - leftPaddle.height) / 2f
 
         leftPaddle.setY(
             targetY = paddleY,
-            minY = FIELD_MARGIN,
-            maxY = WORLD_HEIGHT -
-                FIELD_MARGIN -
+            minY = config.fieldMargin,
+            maxY = config.worldHeight -
+                config.fieldMargin -
                 leftPaddle.height
         )
 
         rightPaddle.setY(
             targetY = paddleY,
-            minY = FIELD_MARGIN,
-            maxY = WORLD_HEIGHT -
-                FIELD_MARGIN -
+            minY = config.fieldMargin,
+            maxY = config.worldHeight -
+                config.fieldMargin -
                 rightPaddle.height
         )
-    }
-
-    private companion object {
-        const val WORLD_WIDTH = 800f
-        const val WORLD_HEIGHT = 480f
-        const val FIELD_MARGIN = 30f
     }
 }
