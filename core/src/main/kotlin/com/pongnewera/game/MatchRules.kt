@@ -1,7 +1,8 @@
 package com.pongnewera.game
 
 class MatchRules(
-    private val winningScore: Int = 5
+    private val winningScore: Int,
+    private val worldWidth: Float
 ) {
 
     fun hasWinner(score: Score): Boolean {
@@ -12,7 +13,7 @@ class MatchRules(
     fun determineScoringPlayer(ball: Ball): ScoringPlayer? {
         return when {
             ball.x + ball.size < 0f -> ScoringPlayer.RIGHT
-            ball.x > PongGame.WORLD_WIDTH -> ScoringPlayer.LEFT
+            ball.x > worldWidth -> ScoringPlayer.LEFT
             else -> null
         }
     }
